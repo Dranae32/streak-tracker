@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streak Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #355E3B 0%, #2F4F2F 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .header-logo {
+            max-width: 150px;
+            max-height: 80px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #355E3B;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            gap: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #DDA0DD 0%, #BA55D3 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            flex: 1;
+            box-shadow: 0 4px 15px rgba(221, 160, 221, 0.4);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .calendar-header h2 {
+            color: #355E3B;
+            font-size: 1.5em;
+            flex: 1;
+            text-align: center;
+        }
+
+        .nav-btn {
+            background: #355E3B;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #2F4F2F;
+            transform: scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .today-btn {
+            background: #D2691E;
+            color: white;
+            font-weight: bold;
+        }
+
+        .today-btn:hover {
+            background: #BC6C25;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin: 30px 0;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: bold;
+            color: #355E3B;
+            padding: 10px;
+            font-size: 0.9em;
+        }
+
+        .day {
+            width: 100%;
+            padding-bottom: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: white;
+        }
+        
+        .day-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day:hover:not(.empty):not(.future) {
+            transform: scale(1.05);
+            border-color: #355E3B;
+        }
+
+        .day.completed .day-content {
+            background: linear-gradient(135deg, #DDA0DD 0%, #BA55D3 100%);
+            color: white;
+            border-radius: 8px;
+        }
+        
+        .day.completed {
+            border-color: #DDA0DD;
+        }
+
+        .day.completed::after {
+            content: '✓';
+            position: absolute;
+            font-size: 1.5em;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .day.today {
+            border: 3px solid #D2691E;
+            box-shadow: 0 0 15px rgba(210, 105, 30, 0.5);
+        }
+
+        .day.future {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .day.empty {
+            border: none;
+            cursor: default;
+        }
+
+        .milestones {
+            margin-top: 30px;
+        }
+
+        .milestones h2 {
+            color: #355E3B;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .milestone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .milestone {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .milestone.achieved {
+            background: linear-gradient(135deg, #D2691E 0%, #BC6C25 100%);
+            border-color: #D2691E;
+            box-shadow: 0 4px 15px rgba(210, 105, 30, 0.4);
+            color: white;
+        }
+
+        .milestone-icon {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .milestone-label {
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: auto;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-content h2 {
+            color: #355E3B;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .close-btn {
+            background: #355E3B;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #2F4F2F;
+            transform: scale(1.05);
+        }
+
+        .reset-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .reset-btn:hover {
+            background: #ee5a52;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="files/logo.png" alt="Logo" class="header-logo" onerror="this.style.display='none'">
+            <h1>Streak Tracker</h1>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <span class="stat-number" id="currentStreak">0</span>
+                <span class="stat-label">Current Streak</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number" id="totalDays">0</span>
+                <span class="stat-label">Total Days</span>
+            </div>
+        </div>
+
+        <div class="calendar-header">
+            <button class="nav-btn" onclick="previousMonth()">← Previous</button>
+            <h2 id="monthYear"></h2>
+            <button class="nav-btn today-btn" onclick="goToToday()">Today</button>
+            <button class="nav-btn" onclick="nextMonth()">Next →</button>
+        </div>
+
+        <div id="calendarContainer"></div>
+        
+        <div id="debugInfo" style="background: #fff3cd; padding: 15px; margin: 20px 0; border-radius: 8px; font-size: 0.9em;"></div>
+
+        <div class="milestones">
+            <h2>🏆 Milestones</h2>
+            <div class="milestone-grid" id="milestoneGrid"></div>
+        </div>
+
+        <div style="text-align: center;">
+            <button class="reset-btn" onclick="resetProgress()">Reset Progress</button>
+        </div>
+    </div>
+
+    <div class="modal" id="voucherModal">
+        <div class="modal-content">
+            <h2>🎉 Milestone Achieved!</h2>
+            <p id="milestoneText"></p>
+            <div id="voucherContent"></div>
+            <button class="close-btn" onclick="closeModal()">Awesome!</button>
+        </div>
+    </div>
+
+    <script>
+        const MILESTONES = [7, 14, 21, 28, 35, 42, 49, 56, 63, 70, 77, 84, 90];
+        
+        let completedDays = {};
+        let viewMonth = new Date().getMonth();
+        let viewYear = new Date().getFullYear();
+
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('streakData');
+                if (saved) {
+                    completedDays = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.warn('localStorage not available:', e);
+                // Try sessionStorage as fallback
+                try {
+                    const saved = sessionStorage.getItem('streakData');
+                    if (saved) {
+                        completedDays = JSON.parse(saved);
+                    }
+                } catch (e2) {
+                    console.warn('sessionStorage also not available:', e2);
+                }
+            }
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('streakData', JSON.stringify(completedDays));
+            } catch (e) {
+                console.warn('localStorage save failed:', e);
+                // Try sessionStorage as fallback
+                try {
+                    sessionStorage.setItem('streakData', JSON.stringify(completedDays));
+                } catch (e2) {
+                    console.warn('sessionStorage save also failed:', e2);
+                    // Data will only persist in memory during this session
+                }
+            }
+        }
+
+        function getDateKey(date) {
+            return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+        }
+
+        function toggleDay(dateKey) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const clickedDate = new Date(dateKey);
+            
+            if (clickedDate > today) return;
+
+            const wasCompleted = completedDays[dateKey];
+            
+            if (wasCompleted) {
+                delete completedDays[dateKey];
+            } else {
+                completedDays[dateKey] = true;
+            }
+            
+            saveData();
+            renderCalendar();
+            updateStats();
+            
+            // Only check milestone after updating stats (so streak is recalculated)
+            if (!wasCompleted) {
+                checkMilestone();
+            }
+        }
+
+        function calculateStreak() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let streak = 0;
+            let checkDate = new Date(today);
+
+            while (true) {
+                const key = getDateKey(checkDate);
+                if (completedDays[key]) {
+                    streak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+
+            return streak;
+        }
+
+        function getTotalDays() {
+            return Object.keys(completedDays).length;
+        }
+
+        function updateStats() {
+            document.getElementById('currentStreak').textContent = calculateStreak();
+            document.getElementById('totalDays').textContent = getTotalDays();
+            renderMilestones();
+        }
+
+        function renderMilestones() {
+            const streak = calculateStreak();
+            const grid = document.getElementById('milestoneGrid');
+            grid.innerHTML = '';
+
+            MILESTONES.forEach(milestone => {
+                const div = document.createElement('div');
+                div.className = `milestone ${streak >= milestone ? 'achieved' : ''}`;
+                div.innerHTML = `
+                    <div class="milestone-icon">${streak >= milestone ? '🏆' : '🔒'}</div>
+                    <div class="milestone-label">${milestone} Days</div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function checkMilestone() {
+            const streak = calculateStreak();
+            if (MILESTONES.includes(streak)) {
+                showVoucher(streak);
+            }
+        }
+
+        function showVoucher(milestone) {
+            const modal = document.getElementById('voucherModal');
+            const text = document.getElementById('milestoneText');
+            const content = document.getElementById('voucherContent');
+
+            text.textContent = `You've reached ${milestone} days! Here's your reward:`;
+            
+            const voucherPath = `vouchers/voucher-${milestone}.png`;
+            const voucherPathJpg = `vouchers/voucher-${milestone}.jpg`;
+            const voucherPathPdf = `vouchers/voucher-${milestone}.pdf`;
+
+            const img = new Image();
+            img.onload = function() {
+                content.innerHTML = `<img src="${voucherPath}" alt="Voucher">`;
+            };
+            img.onerror = function() {
+                const imgJpg = new Image();
+                imgJpg.onload = function() {
+                    content.innerHTML = `<img src="${voucherPathJpg}" alt="Voucher">`;
+                };
+                imgJpg.onerror = function() {
+                    content.innerHTML = `
+                        <p>Your voucher is ready!</p>
+                        <a href="${voucherPathPdf}" target="_blank" style="color: #8B4513; font-size: 1.2em; text-decoration: none; font-weight: bold;">📄 Open Voucher PDF</a>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #666;">Click the link above to view your reward</p>
+                    `;
+                };
+                imgJpg.src = voucherPathJpg;
+            };
+            img.src = voucherPath;
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('voucherModal').classList.remove('active');
+        }
+
+        function updateMonthYearDisplay() {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('monthYear').textContent = `${monthNames[viewMonth]} ${viewYear}`;
+        }
+
+        function previousMonth() {
+            viewMonth--;
+            if (viewMonth < 0) {
+                viewMonth = 11;
+                viewYear--;
+            }
+            renderCalendar();
+            updateMonthYearDisplay();
+        }
+
+        function nextMonth() {
+            viewMonth++;
+            if (viewMonth > 11) {
+                viewMonth = 0;
+                viewYear++;
+            }
+            renderCalendar();
+            updateMonthYearDisplay();
+        }
+
+        function goToToday() {
+            const today = new Date();
+            viewMonth = today.getMonth();
+            viewYear = today.getFullYear();
+            renderCalendar();
+            updateMonthYearDisplay();
+        }
+
+        function renderCalendar() {
+            const container = document.getElementById('calendarContainer');
+            const debugInfo = document.getElementById('debugInfo');
+            
+            try {
+                container.innerHTML = '';
+
+                const firstDay = new Date(viewYear, viewMonth, 1);
+                const lastDay = new Date(viewYear, viewMonth + 1, 0);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const calendar = document.createElement('div');
+                calendar.className = 'calendar';
+                calendar.style.display = 'grid';
+                calendar.style.gridTemplateColumns = 'repeat(7, 1fr)';
+                calendar.style.gap = '10px';
+
+                const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                dayHeaders.forEach(day => {
+                    const header = document.createElement('div');
+                    header.className = 'day-header';
+                    header.textContent = day;
+                    calendar.appendChild(header);
+                });
+
+                const startDay = firstDay.getDay();
+                for (let i = 0; i < startDay; i++) {
+                    const empty = document.createElement('div');
+                    empty.className = 'day empty';
+                    calendar.appendChild(empty);
+                }
+
+                for (let day = 1; day <= lastDay.getDate(); day++) {
+                    const date = new Date(viewYear, viewMonth, day);
+                    const dateKey = getDateKey(date);
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'day';
+                    
+                    const dayContent = document.createElement('div');
+                    dayContent.className = 'day-content';
+                    dayContent.textContent = day;
+                    dayDiv.appendChild(dayContent);
+
+                    if (completedDays[dateKey]) {
+                        dayDiv.classList.add('completed');
+                    }
+
+                    if (date.toDateString() === today.toDateString()) {
+                        dayDiv.classList.add('today');
+                    }
+
+                    if (date > today) {
+                        dayDiv.classList.add('future');
+                    }
+
+                    dayDiv.onclick = () => toggleDay(dateKey);
+                    calendar.appendChild(dayDiv);
+                }
+
+                container.appendChild(calendar);
+                
+                debugInfo.innerHTML = `✅ Calendar loaded successfully! Days: ${lastDay.getDate()}, Browser: ${navigator.userAgent.includes('iPad') || navigator.userAgent.includes('iPhone') ? 'iOS' : 'Other'}`;
+                
+            } catch (error) {
+                debugInfo.innerHTML = `❌ Error loading calendar: ${error.message}<br>Please screenshot this and share it.`;
+                console.error('Calendar error:', error);
+            }
+        }
+
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                completedDays = {};
+                saveData();
+                renderCalendar();
+                updateStats();
+            }
+        }
+
+        loadData();
+        updateMonthYearDisplay();
+        renderCalendar();
+        updateStats();
+        
+        // Update debug info after everything loads
+        setTimeout(() => {
+            const debugInfo = document.getElementById('debugInfo');
+            const storageType = (() => {
+                try {
+                    localStorage.setItem('test', 'test');
+                    localStorage.removeItem('test');
+                    return 'localStorage ✅';
+                } catch (e) {
+                    try {
+                        sessionStorage.setItem('test', 'test');
+                        sessionStorage.removeItem('test');
+                        return 'sessionStorage (fallback) ⚠️';
+                    } catch (e2) {
+                        return 'No storage available ❌';
+                    }
+                }
+            })();
+            
+            debugInfo.innerHTML = `
+                <strong>System Info:</strong><br>
+                Storage: ${storageType}<br>
+                Browser: ${navigator.userAgent}<br>
+                Days tracked: ${Object.keys(completedDays).length}<br>
+                Current streak: ${calculateStreak()}
+            `;
+        }, 100);
+    </script>
+</body>
+</html>
