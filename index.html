@@ -347,8 +347,6 @@
         </div>
 
         <div id="calendarContainer"></div>
-        
-        <div id="debugInfo" style="background: #fff3cd; padding: 15px; margin: 20px 0; border-radius: 8px; font-size: 0.9em;"></div>
 
         <div class="milestones">
             <h2>🏆 Milestones</h2>
@@ -566,7 +564,6 @@
 
         function renderCalendar() {
             const container = document.getElementById('calendarContainer');
-            const debugInfo = document.getElementById('debugInfo');
             
             try {
                 container.innerHTML = '';
@@ -626,10 +623,7 @@
 
                 container.appendChild(calendar);
                 
-                debugInfo.innerHTML = `✅ Calendar loaded successfully! Days: ${lastDay.getDate()}, Browser: ${navigator.userAgent.includes('iPad') || navigator.userAgent.includes('iPhone') ? 'iOS' : 'Other'}`;
-                
             } catch (error) {
-                debugInfo.innerHTML = `❌ Error loading calendar: ${error.message}<br>Please screenshot this and share it.`;
                 console.error('Calendar error:', error);
             }
         }
@@ -647,34 +641,6 @@
         updateMonthYearDisplay();
         renderCalendar();
         updateStats();
-        
-        // Update debug info after everything loads
-        setTimeout(() => {
-            const debugInfo = document.getElementById('debugInfo');
-            const storageType = (() => {
-                try {
-                    localStorage.setItem('test', 'test');
-                    localStorage.removeItem('test');
-                    return 'localStorage ✅';
-                } catch (e) {
-                    try {
-                        sessionStorage.setItem('test', 'test');
-                        sessionStorage.removeItem('test');
-                        return 'sessionStorage (fallback) ⚠️';
-                    } catch (e2) {
-                        return 'No storage available ❌';
-                    }
-                }
-            })();
-            
-            debugInfo.innerHTML = `
-                <strong>System Info:</strong><br>
-                Storage: ${storageType}<br>
-                Browser: ${navigator.userAgent}<br>
-                Days tracked: ${Object.keys(completedDays).length}<br>
-                Current streak: ${calculateStreak()}
-            `;
-        }, 100);
     </script>
 </body>
 </html>
