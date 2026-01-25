@@ -143,8 +143,7 @@
         }
 
         .day {
-            width: 100%;
-            padding-bottom: 100%;
+            aspect-ratio: 1;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             display: flex;
@@ -156,30 +155,15 @@
             position: relative;
             background: white;
         }
-        
-        .day-content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
 
         .day:hover:not(.empty):not(.future) {
             transform: scale(1.05);
             border-color: #355E3B;
         }
 
-        .day.completed .day-content {
+        .day.completed {
             background: linear-gradient(135deg, #DDA0DD 0%, #BA55D3 100%);
             color: white;
-            border-radius: 8px;
-        }
-        
-        .day.completed {
             border-color: #DDA0DD;
         }
 
@@ -188,7 +172,6 @@
             position: absolute;
             font-size: 1.5em;
             font-weight: bold;
-            z-index: 1;
         }
 
         .day.today {
@@ -347,8 +330,6 @@
         </div>
 
         <div id="calendarContainer"></div>
-        
-        <div id="debugInfo" style="background: #fff3cd; padding: 15px; margin: 20px 0; border-radius: 8px; font-size: 0.9em;"></div>
 
         <div class="milestones">
             <h2>🏆 Milestones</h2>
@@ -377,38 +358,14 @@
         let viewYear = new Date().getFullYear();
 
         function loadData() {
-            try {
-                const saved = localStorage.getItem('streakData');
-                if (saved) {
-                    completedDays = JSON.parse(saved);
-                }
-            } catch (e) {
-                console.warn('localStorage not available:', e);
-                // Try sessionStorage as fallback
-                try {
-                    const saved = sessionStorage.getItem('streakData');
-                    if (saved) {
-                        completedDays = JSON.parse(saved);
-                    }
-                } catch (e2) {
-                    console.warn('sessionStorage also not available:', e2);
-                }
+            const saved = localStorage.getItem('streakData');
+            if (saved) {
+                completedDays = JSON.parse(saved);
             }
         }
 
         function saveData() {
-            try {
-                localStorage.setItem('streakData', JSON.stringify(completedDays));
-            } catch (e) {
-                console.warn('localStorage save failed:', e);
-                // Try sessionStorage as fallback
-                try {
-                    sessionStorage.setItem('streakData', JSON.stringify(completedDays));
-                } catch (e2) {
-                    console.warn('sessionStorage save also failed:', e2);
-                    // Data will only persist in memory during this session
-                }
-            }
+            localStorage.setItem('streakData', JSON.stringify(completedDays));
         }
 
         function getDateKey(date) {
@@ -566,72 +523,55 @@
 
         function renderCalendar() {
             const container = document.getElementById('calendarContainer');
-            const debugInfo = document.getElementById('debugInfo');
-            
-            try {
-                container.innerHTML = '';
+            container.innerHTML = '';
 
-                const firstDay = new Date(viewYear, viewMonth, 1);
-                const lastDay = new Date(viewYear, viewMonth + 1, 0);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
+            const firstDay = new Date(viewYear, viewMonth, 1);
+            const lastDay = new Date(viewYear, viewMonth + 1, 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-                const calendar = document.createElement('div');
-                calendar.className = 'calendar';
-                calendar.style.display = 'grid';
-                calendar.style.gridTemplateColumns = 'repeat(7, 1fr)';
-                calendar.style.gap = '10px';
+            const calendar = document.createElement('div');
+            calendar.className = 'calendar';
 
-                const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                dayHeaders.forEach(day => {
-                    const header = document.createElement('div');
-                    header.className = 'day-header';
-                    header.textContent = day;
-                    calendar.appendChild(header);
-                });
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = day;
+                calendar.appendChild(header);
+            });
 
-                const startDay = firstDay.getDay();
-                for (let i = 0; i < startDay; i++) {
-                    const empty = document.createElement('div');
-                    empty.className = 'day empty';
-                    calendar.appendChild(empty);
-                }
-
-                for (let day = 1; day <= lastDay.getDate(); day++) {
-                    const date = new Date(viewYear, viewMonth, day);
-                    const dateKey = getDateKey(date);
-                    const dayDiv = document.createElement('div');
-                    dayDiv.className = 'day';
-                    
-                    const dayContent = document.createElement('div');
-                    dayContent.className = 'day-content';
-                    dayContent.textContent = day;
-                    dayDiv.appendChild(dayContent);
-
-                    if (completedDays[dateKey]) {
-                        dayDiv.classList.add('completed');
-                    }
-
-                    if (date.toDateString() === today.toDateString()) {
-                        dayDiv.classList.add('today');
-                    }
-
-                    if (date > today) {
-                        dayDiv.classList.add('future');
-                    }
-
-                    dayDiv.onclick = () => toggleDay(dateKey);
-                    calendar.appendChild(dayDiv);
-                }
-
-                container.appendChild(calendar);
-                
-                debugInfo.innerHTML = `✅ Calendar loaded successfully! Days: ${lastDay.getDate()}, Browser: ${navigator.userAgent.includes('iPad') || navigator.userAgent.includes('iPhone') ? 'iOS' : 'Other'}`;
-                
-            } catch (error) {
-                debugInfo.innerHTML = `❌ Error loading calendar: ${error.message}<br>Please screenshot this and share it.`;
-                console.error('Calendar error:', error);
+            const startDay = firstDay.getDay();
+            for (let i = 0; i < startDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'day empty';
+                calendar.appendChild(empty);
             }
+
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const date = new Date(viewYear, viewMonth, day);
+                const dateKey = getDateKey(date);
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day';
+                dayDiv.textContent = day;
+
+                if (completedDays[dateKey]) {
+                    dayDiv.classList.add('completed');
+                }
+
+                if (date.toDateString() === today.toDateString()) {
+                    dayDiv.classList.add('today');
+                }
+
+                if (date > today) {
+                    dayDiv.classList.add('future');
+                }
+
+                dayDiv.onclick = () => toggleDay(dateKey);
+                calendar.appendChild(dayDiv);
+            }
+
+            container.appendChild(calendar);
         }
 
         function resetProgress() {
@@ -647,34 +587,6 @@
         updateMonthYearDisplay();
         renderCalendar();
         updateStats();
-        
-        // Update debug info after everything loads
-        setTimeout(() => {
-            const debugInfo = document.getElementById('debugInfo');
-            const storageType = (() => {
-                try {
-                    localStorage.setItem('test', 'test');
-                    localStorage.removeItem('test');
-                    return 'localStorage ✅';
-                } catch (e) {
-                    try {
-                        sessionStorage.setItem('test', 'test');
-                        sessionStorage.removeItem('test');
-                        return 'sessionStorage (fallback) ⚠️';
-                    } catch (e2) {
-                        return 'No storage available ❌';
-                    }
-                }
-            })();
-            
-            debugInfo.innerHTML = `
-                <strong>System Info:</strong><br>
-                Storage: ${storageType}<br>
-                Browser: ${navigator.userAgent}<br>
-                Days tracked: ${Object.keys(completedDays).length}<br>
-                Current streak: ${calculateStreak()}
-            `;
-        }, 100);
     </script>
 </body>
 </html>
