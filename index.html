@@ -466,19 +466,27 @@
             document.getElementById('totalDays').textContent = getTotalDays();
             renderMilestones();
         }
-
+        
         function renderMilestones() {
             const streak = calculateStreak();
             const grid = document.getElementById('milestoneGrid');
             grid.innerHTML = '';
-
+        
             MILESTONES.forEach(milestone => {
                 const div = document.createElement('div');
-                div.className = `milestone ${streak >= milestone ? 'achieved' : ''}`;
+                const isAchieved = streak >= milestone;
+                div.className = `milestone ${isAchieved ? 'achieved' : ''}`;
                 div.innerHTML = `
-                    <div class="milestone-icon">${streak >= milestone ? '🏆' : '🔒'}</div>
+                    <div class="milestone-icon">${isAchieved ? '🏆' : '🔒'}</div>
                     <div class="milestone-label">${milestone} Days</div>
                 `;
+                
+                // Make achieved milestones clickable
+                if (isAchieved) {
+                    div.style.cursor = 'pointer';
+                    div.onclick = () => showVoucher(milestone);
+                }
+                
                 grid.appendChild(div);
             });
         }
