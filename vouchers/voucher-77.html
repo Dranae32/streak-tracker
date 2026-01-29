@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reward Voucher</title>
+    <style>
+        @media print {
+            body {
+                margin: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .voucher {
+            width: 800px;
+            height: 500px;
+            background: white;
+            border: 8px solid #C73866;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .voucher-header {
+            background: linear-gradient(135deg, #C73866 0%, #8B008B 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .voucher-title {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .voucher-subtitle {
+            font-size: 1.3em;
+            margin: 10px 0 0 0;
+            opacity: 0.95;
+            font-style: italic;
+        }
+
+        .voucher-body {
+            padding: 50px 60px;
+            text-align: center;
+        }
+
+        .reward-text {
+            font-size: 2em;
+            color: #C73866;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            font-size: 1.2em;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .milestone-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #8B008B 0%, #C73866 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .decorative-corner {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+        }
+
+        .corner-tl {
+            top: 0;
+            left: 0;
+            border-top: 50px solid #8B008B;
+            border-right: 50px solid transparent;
+            opacity: 0.3;
+        }
+
+        .corner-br {
+            bottom: 0;
+            right: 0;
+            border-bottom: 50px solid #C73866;
+            border-left: 50px solid transparent;
+            opacity: 0.3;
+        }
+
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            text-align: left;
+        }
+
+        .instructions h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+
+        .instructions code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        button {
+            background: #C73866;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        button:hover {
+            background: #8B008B;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="voucher">
+            <div class="decorative-corner corner-tl"></div>
+            <div class="decorative-corner corner-br"></div>
+            
+            <div class="voucher-header">
+                <h1 class="voucher-title">Congratulations!</h1>
+                <p class="voucher-subtitle">You've earned this reward</p>
+            </div>
+            
+            <div class="voucher-body">
+                <div class="milestone-badge">77 Day Streak</div>
+                
+                <p class="reward-text">Make a dish of your choice for you (or with you).</p>
+                
+                <p class="description">
+                    Redeem this voucher for your special reward!<br>
+                    I'll even do the dishes afterwards.
+                </p>
+            </div>
+        </div>
+
+        <div class="instructions no-print">
+            <h3>📝 How to Edit This Voucher:</h3>
+            <ol>
+                <li>Right-click on this page and select <strong>"Save As"</strong> or press <code>Ctrl+S</code> (Windows) / <code>Cmd+S</code> (Mac)</li>
+                <li>Save it as <code>voucher-7.html</code> (or any name you like)</li>
+                <li>Open the saved file with a text editor (Notepad, TextEdit, VS Code, etc.)</li>
+                <li>Find and edit the text between the HTML tags:
+                    <ul>
+                        <li><code>&lt;h1 class="voucher-title"&gt;Congratulations!&lt;/h1&gt;</code></li>
+                        <li><code>&lt;p class="voucher-subtitle"&gt;You've earned this reward&lt;/p&gt;</code></li>
+                        <li><code>&lt;div class="milestone-badge"&gt;14 Day Streak&lt;/div&gt;</code></li>
+                        <li><code>&lt;p class="reward-text"&gt;I will bake something for you (of choice)&lt;/p&gt;</code></li>
+                        <li><code>&lt;p class="description"&gt;...&lt;/p&gt;</code></li>
+                    </ul>
+                </li>
+                <li>Save the file and refresh in your browser to see changes</li>
+            </ol>
+
+            <h3>🎨 To Change Colors:</h3>
+            <p>Find these color codes in the file and replace them:</p>
+            <ul>
+                <li><strong>Crimson:</strong> <code>#C73866</code></li>
+                <li><strong>Mulberry:</strong> <code>#8B008B</code></li>
+            </ul>
+
+            <h3>💾 Save as Image:</h3>
+            <button onclick="window.print()">Print/Save as PDF</button>
+            <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                Or take a screenshot and save as PNG/JPG
+            </p>
+        </div>
+    </div>
+</body>
+</html>
