@@ -505,29 +505,12 @@
 
             text.textContent = `You've reached ${milestone} days! Here's your reward:`;
             
-            const voucherPath = `vouchers/voucher-${milestone}.png`;
-            const voucherPathJpg = `vouchers/voucher-${milestone}.jpg`;
             const voucherPathPdf = `vouchers/voucher-${milestone}.pdf`;
-
-            const img = new Image();
-            img.onload = function() {
-                content.innerHTML = `<img src="${voucherPath}" alt="Voucher">`;
-            };
-            img.onerror = function() {
-                const imgJpg = new Image();
-                imgJpg.onload = function() {
-                    content.innerHTML = `<img src="${voucherPathJpg}" alt="Voucher">`;
-                };
-                imgJpg.onerror = function() {
-                    content.innerHTML = `
-                        <p>Your voucher is ready!</p>
-                        <a href="${voucherPathPdf}" target="_blank" style="color: #8B4513; font-size: 1.2em; text-decoration: none; font-weight: bold;">📄 Open Voucher PDF</a>
-                        <p style="margin-top: 10px; font-size: 0.9em; color: #666;">Click the link above to view your reward</p>
-                    `;
-                };
-                imgJpg.src = voucherPathJpg;
-            };
-            img.src = voucherPath;
+            content.innerHTML = `
+                <p>Your voucher is ready!</p>
+                <a href="${voucherPathPdf}" target="_blank" rel="noopener noreferrer" style="color: #8B4513; font-size: 1.2em; text-decoration: none; font-weight: bold;">📄 Open Voucher PDF</a>
+                <p style="margin-top: 10px; font-size: 0.9em; color: #666;">Click the link above to view your reward</p>
+            `;
 
             modal.classList.add('active');
         }
